@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Compare ThingsBoard 4.4 Cloud quotas (Traffic Packs, Storage Packs, TTL) vs. an 8 GB RackNerd KVM VPS over 12 to 36 months.">
+<title>ThingsBoard Cloud vs 8 GB RackNerd VPS — TCO Calculator (2026)</title>
+<style>
+  :root {
+    --bg: #0b1120; --card: #111827; --bd: #1f2937; --tx: #f1f5f9;
+    --mu: #94a3b8; --cloud: #818cf8; --vps: #2dd4bf; --ok: #22c55e;
+    --warn: #f59e0b; --bad: #ef4444; --soft-c: rgba(129,140,248,.12);
+    --soft-v: rgba(45,212,191,.12);
+  }
+  body.light {
+    --bg: #f8fafc; --card: #ffffff; --bd: #e2e8f0; --tx: #0f172a;
+    --mu: #475569; --cloud: #4f46e5; --vps: #0d9488; --ok: #16a34a;
+    --warn: #d97706; --bad: #dc2626; --soft-c: #eef2ff; --soft-v: #f0fdfa;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg); color: var(--tx); line-height: 1.5; padding: 20px 14px 40px; }
+  .wrap { max-width: 1020px; margin: 0 auto; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; border-top: 4px solid var(--cloud); padding-top: 16px; }
+  h1 { margin: 0; font-size: clamp(1.4rem, 3.4vw, 2.1rem); letter-spacing: -.03em; }
+  .sub { margin: 6px 0 0; color: var(--mu); font-size: .92rem; max-width: 68ch; }
+  .btn { background: var(--card); color: var(--tx); border: 1px solid var(--bd); border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: .84rem; font-weight: 600; }
+  .grid { display: grid; grid-template-columns: .95fr 1.25fr; gap: 16px; align-items: start; }
+  @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--bd); border-radius: 14px; padding: 18px; }
+  h2 { margin: 0 0 12px; font-size: 1.05rem; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px) { .fields { grid-template-columns: 1fr; } }
+  .wide { grid-column: 1 / -1; }
+  label { display: grid; gap: 4px; font-size: .82rem; font-weight: 600; color: var(--mu); }
+  input, select { width: 100%; background: var(--bg); color: var(--tx); border: 1px solid var(--bd); border-radius: 8px; padding: 9px 10px; font: inherit; font-size: .92rem; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  @media (max-width: 520px) { .kpis { grid-template-columns: 1fr; } }
+  .mini { background: var(--bg); border: 1px solid var(--bd); border-radius: 10px; padding: 10px 12px; }
+  .mini small { display: block; color: var(--mu); font-size: .76rem; }
+  .mini strong { font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+  .duel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px) { .duel { grid-template-columns: 1fr; } }
+  .box { border-radius: 12px; padding: 14px; border: 1px solid var(--bd); }
+  .box.c { background: var(--soft-c); }
+  .box.v { background: var(--soft-v); }
+  .box h3 { margin: 0; font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: var(--mu); }
+  .big { font-size: 1.65rem; font-weight: 800; margin: 4px 0; font-variant-numeric: tabular-nums; }
+  .box.c .big { color: var(--cloud); }
+  .box.v .big { color: var(--vps); }
+  .meta { font-size: .83rem; color: var(--mu); margin: 4px 0 0; }
+  .alert { margin-top: 12px; padding: 11px 13px; border-radius: 10px; background: var(--bg); border: 1px solid var(--bd); font-size: .87rem; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); }
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: .84rem; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 7px 4px; border-bottom: 1px solid var(--bd); }
+  th:first-child, td:first-child { text-align: left; }
+  tr.active { background: var(--soft-v); font-weight: 700; }
+  .cta { margin-top: 16px; padding: 14px; border-radius: 12px; background: var(--bg); border: 1px solid var(--bd); }
+  .cta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .pill { text-decoration: none; font-weight: 700; font-size: .86rem; padding: 9px 14px; border-radius: 8px; }
+  .pill.c { background: var(--cloud); color: #fff; }
+  .pill.v { background: var(--vps); color: #042f2e; }
+  .pill.g { border: 1px solid var(--bd); color: var(--tx); }
+  .foot { margin-top: 12px; font-size: .77rem; color: var(--mu); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>ThingsBoard 4.4 Cloud vs. 8 GB RackNerd VPS</h1>
+      <p class="sub">Real telemetry math (messages, data points, Traffic/Storage Packs, and 30d vs. 60d retention) compared against ThingsBoard 4.4 self-hosted under the 100-device BUSL 1.1 Free License.</p>
+    </div>
+    <button class="btn" id="themeBtn" type="button">Light / Dark</button>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>1. Fleet &amp; Hosting Inputs</h2>
+      <div class="fields">
+        <label>Devices (ESP32 / nodes) <input id="devices" type="number" min="1" max="1000" value="20"></label>
+        <label>Metrics per payload <input id="metrics" type="number" min="1" max="25" value="5"></label>
+        <label>Send interval (sec) <input id="seconds" type="number" min="1" max="3600" value="10"></label>
+        <label>Raw retention TTL (days) <input id="ttl" type="number" min="1" max="365" value="30"></label>
+        <label>Cloud top-up packs
+          <select id="packs">
+            <option value="yes" selected>Allow Traffic/Storage Packs ($5 / $10)</option>
+            <option value="no">Base quotas only (jump to Pilot $149)</option>
+          </select>
+        </label>
+        <label>Comparison horizon
+          <select id="horizon">
+            <option value="12">12 months</option>
+            <option value="24" selected>24 months</option>
+            <option value="36">36 months</option>
+          </select>
+        </label>
+        <label class="wide">RackNerd 8 GB KVM VPS tier
+          <select id="vpsPlan">
+            <option value="annual" selected>RackNerd 8 GB KVM · Annual Special ($119.99/yr ≈ $10.00/mo, locked renewal)</option>
+            <option value="monthly">RackNerd 8 GB KVM · Standard Monthly ($36.59/mo, 6 vCPU / 220 GB SSD)</option>
+          </select>
+        </label>
+        <label>Setup cost ($) <input id="setupUsd" type="number" min="0" step="10" value="0"></label>
+        <label>Monthly ops time ($/mo) <input id="opsUsd" type="number" min="0" step="5" value="0"></label>
+        <label class="wide">ThingsBoard 4.4 branding
+          <select id="branding">
+            <option value="kept" selected>Keep ThingsBoard branding (Free ≤100 devices, 1 server)</option>
+            <option value="removed">White-label / remove branding (requires paid license)</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2. Monthly Load &amp; Cost Breakdown</h2>
+      <div class="kpis">
+        <div class="mini"><small>Messages / 30d</small><strong id="kMsg">—</strong></div>
+        <div class="mini"><small>Data points / 30d</small><strong id="kPts">—</strong></div>
+        <div class="mini"><small>Free tier (1M) lasts</small><strong id="kFree">—</strong></div>
+      </div>
+
+      <div class="duel">
+        <div class="box c">
+          <h3>ThingsBoard Cloud</h3>
+          <div class="big" id="cTot">—</div>
+          <p class="meta" id="cMo">—</p>
+          <p class="meta" id="cDetail">—</p>
+        </div>
+        <div class="box v">
+          <h3>Self-Hosted (RackNerd 8 GB)</h3>
+          <div class="big" id="vTot">—</div>
+          <p class="meta" id="vMo">—</p>
+          <p class="meta" id="vDetail">—</p>
+        </div>
+      </div>
+
+      <div class="alert" id="verdict"></div>
+
+      <table>
+        <thead>
+          <tr><th>Send interval</th><th>Points / 30d</th><th>Cloud plan</th><th>Cloud / mo</th><th>Savings vs VPS</th></tr>
+        </thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+
+      <div class="cta">
+        <strong>Ready to deploy or verify pricing?</strong>
+        <p class="meta" style="margin-top:2px">Affiliate disclosure: Links below may earn a commission at no extra cost to you.</p>
+        <div class="cta-row">
+          <a class="pill c" href="https://thingsboard.io/?fpr=r5cma7" target="_blank" rel="noopener sponsored">ThingsBoard Cloud / Free License</a>
+          <a class="pill v" href="https://my.racknerd.com/aff.php?aff=22039" target="_blank" rel="noopener sponsored">RackNerd 8 GB KVM VPS</a>
+          <a class="pill g" id="articleLink" href="#" target="_blank" rel="noopener" hidden>Read Full Breakdown on dev.to</a>
+        </div>
+      </div>
+    </section>
+  </div>
+  <p class="foot">Verified Nov 2026: Cloud Prototype ($49, 50 dev, 5M msg, 10M pts, 1B point-days) + Traffic Pack ($5: +2.5M msg, +5M pts) + Storage Pack ($10: +1B point-days). Pilot ($149, 100 dev, 50M msg, 100M pts). BUSL 1.1 Free License covers ≤100 devices on 1 production server with branding kept. Postgres disk estimate uses ThingsBoard’s ~14 MB per point/sec/day guideline.</p>
+</div>
+
+<script>
+const articleUrl = ""; // Set after publishing on dev.to
+const $ = id => document.getElementById(id);
+
+const PLANS = [
+  { name: "Free", price: 0, dev: 5, msg: 5e5, pts: 1e6, spd: 3e7, packs: false },
+  { name: "Prototype", price: 49, dev: 50, msg: 5e6, pts: 1e7, spd: 1e9, packs: true },
+  { name: "Pilot", price: 149, dev: 100, msg: 5e7, pts: 1e8, spd: 1e10, packs: true },
+  { name: "Startup", price: 399, dev: 500, msg: 2.5e8, pts: 5e8, spd: 1e11, packs: true },
+  { name: "Business", price: 749, dev: 1000, msg: 5e8, pts: 1e9, spd: 2e11, packs: true }
+];
+
+function bestCloud(devices, msg, pts, spd, allowPacks) {
+  let best = null;
+  for (const p of PLANS) {
+    if (devices > p.dev) continue;
+    const overMsg = Math.max(0, msg - p.msg);
+    const overPts = Math.max(0, pts - p.pts);
+    const overSpd = Math.max(0, spd - p.spd);
+    if (!allowPacks || !p.packs) {
+      if (overMsg === 0 && overPts === 0 && overSpd === 0) {
+        best = { name: p.name, mo: p.price, tp: 0, sp: 0 };
+        break;
+      }
+      continue;
+    }
+    const tp = Math.max(Math.ceil(overMsg / 2.5e6), Math.ceil(overPts / 5e6));
+    const sp = Math.ceil(overSpd / 1e9);
+    const mo = p.price + tp * 5 + sp * 10;
+    if (!best || mo < best.mo) best = { name: p.name, mo, tp, sp };
+  }
+  return best;
+}
+
+function calc() {
+  const dev = Math.max(1, +$("devices").value || 1);
+  const met = Math.max(1, +$("metrics").value || 1);
+  const sec = Math.max(1, +$("seconds").value || 1);
+  const ttl = Math.max(1, +$("ttl").value || 1);
+  const allowPacks = $("packs").value === "yes";
+  const horizon = +$("horizon").value;
+  const vpsKey = $("vpsPlan").value;
+  const setupUsd = Math.max(0, +$("setupUsd").value || 0);
+  const opsUsd = Math.max(0, +$("opsUsd").value || 0);
+  const branded = $("branding").value === "kept";
+
+  const msg = Math.ceil(dev * (2592000 / sec));
+  const pts = msg * met;
+  const spd = pts * ttl;
+  const pps = (dev * met) / sec;
+  const pgYearGb = Math.round((pps * 365 * 14) / 1024);
+
+  $("kMsg").textContent = (msg / 1e6).toFixed(2) + "M";
+  $("kPts").textContent = (pts / 1e6).toFixed(2) + "M";
+  const freeHrs = 1e6 / (pps * 3600);
+  $("kFree").textContent = pts <= 1e6 ? "Fits (30d+)" : (freeHrs < 48 ? `~${Math.round(freeHrs)} hours` : `~${(freeHrs/24).toFixed(1)} days`);
+
+  const c = bestCloud(dev, msg, pts, spd, allowPacks);
+  const cTot = c ? c.mo * horizon : null;
+  if (c) {
+    $("cTot").textContent = `$${cTot.toLocaleString()}`;
+    $("cMo").textContent = `$${c.mo}/mo × ${horizon} months`;
+    const extras = [];
+    if (c.tp) extras.push(`${c.tp} Traffic Pack${c.tp > 1 ? "s" : ""}`);
+    if (c.sp) extras.push(`${c.sp} Storage Pack${c.sp > 1 ? "s" : ""}`);
+    $("cDetail").textContent = `Plan: ${c.name}` + (extras.length ? ` + ${extras.join(" + ")}` : " (base quotas)");
+  } else {
+    $("cTot").textContent = "Custom";
+    $("cMo").textContent = "Exceeds Business self-serve limits";
+    $("cDetail").textContent = "Contact ThingsBoard sales";
+  }
+
+  const isAnnual = vpsKey === "annual";
+  const vpsMoBase = isAnnual ? 119.99 / 12 : 36.59;
+  const vpsUpfront = isAnnual ? 119.99 : 36.59;
+  const cycles = isAnnual ? Math.ceil(horizon / 12) : horizon;
+  const cashVps = cycles * vpsUpfront + setupUsd + opsUsd * horizon;
+  const allocVps = vpsMoBase * horizon + setupUsd + opsUsd * horizon;
+
+  let buslNote = "";
+  let buslOk = true;
+  if (dev > 100 || !branded) {
+    buslOk = false;
+    buslNote = dev > 100 ? "Over 100-device BUSL free cap (commercial license required)." : "White-labeling requires a paid ThingsBoard license.";
+  } else {
+    buslNote = `BUSL 1.1 Free License (≤100 devices, 1 server). Est. Postgres telemetry/yr: ~${pgYearGb} GB.`;
+  }
+
+  $("vTot").textContent = `$${Math.round(allocVps).toLocaleString()}`;
+  $("vMo").textContent = `$${(allocVps / horizon).toFixed(2)}/mo avg (${isAnnual ? `$119.99/yr` : `$36.59/mo`})`;
+  $("vDetail").innerHTML = `<span class="${buslOk ? "ok" : "bad"}">${buslNote}</span>`;
+
+  if (c && buslOk) {
+    const net = cTot - allocVps;
+    let beCash = null;
+    for (let m = 1; m <= horizon; m++) {
+      const cumCloud = c.mo * m;
+      const cumVpsCash = (isAnnual ? Math.ceil(m / 12) * 119.99 : m * 36.59) + setupUsd + opsUsd * m;
+      if (cumVpsCash <= cumCloud) { beCash = m; break; }
+    }
+    $("verdict").innerHTML = net > 0
+      ? `<strong class="ok">VPS saves $${Math.round(net).toLocaleString()} over ${horizon} months</strong> vs. Cloud (${c.name}). Cash break-even (counting full ${isAnnual ? "$119.99 annual prepayment" : "monthly bill"}): <b>${beCash ? "Month " + beCash : "Never within horizon"}</b>.`
+      : `<strong class="warn">Cloud is cheaper by $${Math.abs(Math.round(net)).toLocaleString()}</strong> under these inputs — adjust interval or ops cost to test the threshold.`;
+  } else if (!buslOk) {
+    $("verdict").innerHTML = `<strong class="bad">Commercial license required:</strong> ${buslNote} Add the paid On-Prem license cost before comparing against Cloud.`;
+  }
+
+  const intervals = [5, 10, 26, 30, 60];
+  $("matrixBody").innerHTML = intervals.map(s => {
+    const mMsg = Math.ceil(dev * (2592000 / s));
+    const mPts = mMsg * met;
+    const mC = bestCloud(dev, mMsg, mPts, mPts * ttl, allowPacks);
+    const diff = mC ? Math.round(mC.mo - (vpsMoBase + opsUsd)) : null;
+    return `<tr class="${s === sec ? "active" : ""}">
+      <td>Every ${s}s</td>
+      <td>${(mPts / 1e6).toFixed(2)}M</td>
+      <td>${mC ? mC.name + (mC.tp ? ` +${mC.tp}TP` : "") : "Custom"}</td>
+      <td>${mC ? "$" + mC.mo : "—"}</td>
+      <td>${diff !== null ? (diff >= 0 ? `+$${diff}/mo` : `-$${Math.abs(diff)}/mo`) : "—"}</td>
+    </tr>`;
+  }).join("");
+}
+
+if (articleUrl) {
+  const link = $("articleLink");
+  link.href = articleUrl;
+  link.hidden = false;
+}
+$("themeBtn").onclick = () => document.body.classList.toggle("light");
+document.querySelectorAll("input, select").forEach(el => el.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

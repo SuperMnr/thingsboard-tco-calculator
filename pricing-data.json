@@ -1,0 +1,32 @@
+{
+  "asOf": "2026-11-17",
+  "currency": "USD",
+  "market": "United States / Global",
+  "cloud": {
+    "plans": [
+      {"name": "Free", "monthlyCents": 0, "devices": 5, "messages": 500000, "points": 1000000, "storageDays": 30000000, "defaultTtlDays": 30, "modeledPacks": false},
+      {"name": "Prototype", "monthlyCents": 4900, "devices": 50, "messages": 5000000, "points": 10000000, "storageDays": 1000000000, "defaultTtlDays": 60, "modeledPacks": true},
+      {"name": "Pilot", "monthlyCents": 14900, "devices": 100, "messages": 50000000, "points": 100000000, "storageDays": 10000000000, "defaultTtlDays": 180, "modeledPacks": true},
+      {"name": "Startup", "monthlyCents": 39900, "devices": 500, "messages": 250000000, "points": 500000000, "storageDays": 100000000000, "defaultTtlDays": 365, "modeledPacks": true},
+      {"name": "Business", "monthlyCents": 74900, "devices": 1000, "messages": 500000000, "points": 1000000000, "storageDays": 200000000000, "defaultTtlDays": 365, "modeledPacks": true}
+    ],
+    "trafficPack": {"monthlyCents": 500, "messages": 2500000, "points": 5000000},
+    "storagePack": {"monthlyCents": 1000, "storageDays": 1000000000}
+  },
+  "vps": {
+    "freeLicenseDeviceCap": 100,
+    "provider": "RackNerd",
+    "plans": [
+      {"id": "rn-annual", "name": "RackNerd 8 GB KVM · Annual Promo", "ramGb": 8, "vCpu": 6, "storageGb": 150, "billingMonths": 12, "cycleCents": 11999, "monthlyEquivalentCents": 1000, "source": "https://www.racknerd.com/"},
+      {"id": "rn-monthly", "name": "RackNerd 8 GB KVM · Standard Monthly", "ramGb": 8, "vCpu": 6, "storageGb": 220, "billingMonths": 1, "cycleCents": 3659, "monthlyEquivalentCents": 3659, "source": "https://www.racknerd.com/kvm-vps"}
+    ]
+  },
+  "scenario": {"devices": 20, "metrics": 5, "seconds": 10, "days": 30, "ttl": 30, "horizon": 24, "setupUsd": 0, "hours": 0.5, "hourlyUsd": 0, "extrasUsd": 0},
+  "sources": {
+    "cloudPricing": "https://thingsboard.io/pricing/",
+    "cloudLimits": "https://thingsboard.io/docs/paas/reference/subscriptions/",
+    "selfHostedLicense": "https://github.com/thingsboard/thingsboard#license",
+    "dockerSizing": "https://thingsboard.io/docs/installation/docker/",
+    "racknerdKvm": "https://www.racknerd.com/kvm-vps"
+  }
+}
