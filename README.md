@@ -2,7 +2,7 @@
 
 Standalone, zero-dependency interactive TCO calculator comparing **ThingsBoard Cloud** (including Traffic Packs, Storage Packs, and raw TTL retention) against **ThingsBoard 4.4 Self-Hosted** under the BUSL 1.1 Free License (≤100 devices, 1 production server) on an **8 GB KVM VPS (RackNerd)**.
 
-## Default Example (20 ESP32s × 5 metrics every 10s)
+## Default Example (20 ESP32s × 5 metrics every 10s) 
 
 - **Transport messages / month:** `5,184,000`
 - **Data points / month:** `25,920,000`

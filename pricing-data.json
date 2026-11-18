@@ -10,6 +10,7 @@
       {"name": "Startup", "monthlyCents": 39900, "devices": 500, "messages": 250000000, "points": 500000000, "storageDays": 100000000000, "defaultTtlDays": 365, "modeledPacks": true},
       {"name": "Business", "monthlyCents": 74900, "devices": 1000, "messages": 500000000, "points": 1000000000, "storageDays": 200000000000, "defaultTtlDays": 365, "modeledPacks": true}
     ],
+    
     "trafficPack": {"monthlyCents": 500, "messages": 2500000, "points": 5000000},
     "storagePack": {"monthlyCents": 1000, "storageDays": 1000000000}
   },
